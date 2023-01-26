@@ -11,7 +11,7 @@ export class TwitchService {
         this.axiosInstance = axios.create({
             baseURL: this.baseURL,
             headers: {
-                'User-Agent': 'VEMS/1.0.0 (Virtural Event Management System)',
+                'User-Agent': 'VEMS/1.0.0 (Virtual Event Management System)',
             },
         });
     }

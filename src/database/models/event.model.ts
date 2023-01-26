@@ -9,7 +9,9 @@ export class Event {
     @Column()
     name: string;
 
-    @Column()
+    @Column({
+        nullable: true,
+    })
     description: string;
 
     @Column()
@@ -18,10 +20,14 @@ export class Event {
     @Column()
     endTime: Date;
 
-    @Column()
+    @Column({
+        nullable: true,
+    })
     vrcdnStreamName?: string;
 
-    @Column()
+    @Column({
+        nullable: true,
+    })
     twitchStreamName?: string;
 
     @OneToMany(() => Instance, (instance) => instance.event)

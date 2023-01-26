@@ -9,12 +9,18 @@ import {
     Not,
     Repository,
 } from 'typeorm';
+import { InjectMetric } from '@willsoto/nestjs-prometheus';
+import { Gauge } from 'prom-client';
+import { VrcdnService } from './vrcdn.service';
 
 @Injectable()
 export class VRCDNScraper {
     constructor(
         @InjectRepository(Event)
         private readonly eventRepository: Repository<Event>,
+        @InjectMetric('vems_vrcdn_viewers')
+        private readonly vrcdnViewersGauge: Gauge<string>,
+        private readonly vrcdnService: VrcdnService,
     ) {}
 
     private readonly logger = new Logger(VRCDNScraper.name);
@@ -34,7 +40,36 @@ export class VRCDNScraper {
 
         //For each event, print the event name and vrcdnStreamName
         events.forEach((event) => {
-            console.log(event);
+            this.logger.debug(
+                `Event ${event.name} has stream ${event.vrcdnStreamName}, now checking viewers...`,
+            );
+
+            //Check the vrcdn api for the number of viewers
+            this.vrcdnService.getViewers(event.vrcdnStreamName).then((data) => {
+                // for each region, set the gauge to the number of viewers
+                let totalViewers = 0;
+                data.viewers.forEach((region) => {
+                    this.vrcdnViewersGauge.set(
+                        {
+                            streamName: event.vrcdnStreamName,
+                            region: region.region,
+                        },
+                        region.total,
+                    );
+                    totalViewers += region.total;
+                });
+                this.vrcdnViewersGauge.set(
+                    {
+                        streamName: event.vrcdnStreamName,
+                        region: 'total',
+                    },
+                    totalViewers,
+                );
+
+                this.logger.debug(
+                    `Event ${event.name} has ${totalViewers} viewers`,
+                );
+            });
         });
 
         this.logger.debug(

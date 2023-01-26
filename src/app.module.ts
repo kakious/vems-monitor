@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VRCDNModule } from './vrcdn/vrcdn.module';
@@ -24,6 +26,7 @@ import databaseConfig from './config/database.config';
             useClass: TypeOrmConfigService,
             inject: [ConfigService],
         }),
+        PrometheusModule.register(),
         ScheduleModule.forRoot(),
         VRCDNModule,
         TwitchModule,

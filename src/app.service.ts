@@ -4,7 +4,8 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
     getHello(): object {
         return {
-            roxy: 'is cute',
+            service: 'VEMS Monitoring Service',
+            version: '1.0.0',
         };
     }
 }
