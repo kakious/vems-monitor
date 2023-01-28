@@ -9,12 +9,6 @@ export class Instance {
     event: Event;
 
     @Column()
-    startTime: Date;
-
-    @Column()
-    endTime: Date;
-
-    @Column()
     instanceName: string;
 
     @Column()
