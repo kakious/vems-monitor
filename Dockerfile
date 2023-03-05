@@ -36,4 +36,4 @@ COPY --link --chown=1000:1000 --from=production-dependency-stage /app/node_modul
 COPY --link --chown=1000:1000 --from=build-stage /app/dist .
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "/app/src/main.js"]
+CMD ["node", "/app/main.js"]
