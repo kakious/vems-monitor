@@ -29,6 +29,11 @@ export class Event {
     @Column({
         nullable: true,
     })
+    vrcdnStream2Name?: string;
+
+    @Column({
+        nullable: true,
+    })
     twitchStreamName?: string;
 
     @OneToMany(() => Instance, (instance) => instance.event)

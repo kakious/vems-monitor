@@ -17,6 +17,8 @@ export class Instance {
     @Column()
     instanceID: string;
 
-    @Column()
+    @Column({
+        nullable: true,
+    })
     lastScraped: Date;
 }

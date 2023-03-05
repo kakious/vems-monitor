@@ -31,6 +31,8 @@ export class TwitchService {
                 this.logger.error(err);
                 throw err;
             });
-        return response.data.data[0];
+        const resp = response.data.data[0];
+        // if the stream is live, return the stream object, otherwise return null
+        return resp ? resp : null;
     }
 }

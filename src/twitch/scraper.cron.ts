@@ -64,11 +64,21 @@ export class TwitchScraper {
                     },
                     twitchStream.viewer_count,
                 );
-            }
 
-            this.logger.debug(
-                `Event ${event.name} has ${twitchStream.viewer_count} viewers`,
-            );
+                this.logger.debug(
+                    `Event ${event.name} has ${twitchStream.viewer_count} viewers`,
+                );
+            } else {
+                // If the stream is not live, set the gauge to 0
+                this.twitchViewersGauge.set(
+                    {
+                        streamName: event.twitchStreamName,
+                        eventName: event.name,
+                    },
+                    0,
+                );
+                this.logger.debug(`Event ${event.name} is not live`);
+            }
         });
 
         // Check if any event ids are in the runningEvents array that are not in the events array

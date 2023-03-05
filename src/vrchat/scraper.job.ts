@@ -25,13 +25,13 @@ export class VRChatScraper {
         @InjectMetric('vems_vrchat_users_total')
         private readonly vrchatTotalUsers: Gauge<string>,
         private readonly vrchatService: VRChatService,
-    ) {}
+    ) { }
 
     private readonly logger = new Logger(VRChatScraper.name);
     // array of currently running events
     runningEvents: Event[] = [];
 
-    @Interval('vrchat', 15000)
+    @Interval('vrchat', 45000)
     async handleCron() {
         const startTimestamp = Date.now();
         this.logger.debug('Running VRChat Scraper Job');
@@ -103,8 +103,8 @@ export class VRChatScraper {
 
         this.logger.debug(
             'Finished VRChat Scraper Job. Took ' +
-                (Date.now() - startTimestamp) +
-                'ms',
+            (Date.now() - startTimestamp) +
+            'ms',
         );
     }
 }

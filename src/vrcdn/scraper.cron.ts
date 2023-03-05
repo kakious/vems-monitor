@@ -21,7 +21,7 @@ export class VRCDNScraper {
         @InjectMetric('vems_vrcdn_viewers')
         private readonly vrcdnViewersGauge: Gauge<string>,
         private readonly vrcdnService: VrcdnService,
-    ) {}
+    ) { }
 
     readonly regions = ['au', 'br', 'eu', 'jp', 'na'];
     runningEvents: Event[] = [];
@@ -86,6 +86,51 @@ export class VRCDNScraper {
                     }
                 });
 
+                if (event.vrcdnStream2Name) {
+                    this.logger.debug(
+                        `Event ${event.name} has stream ${event.vrcdnStream2Name}, now checking viewers...`,
+                    );
+                    let total2Viewers = 0;
+                    this.vrcdnService
+                        .getViewers(event.vrcdnStream2Name)
+                        .then((data) => {
+                            // for each region, set the gauge to the number of viewers
+                            // track what regions we have data for, so we can set the total to 0 for any regions we don't have data for
+                            const regionsWithData = [];
+                            data.viewers.forEach((region) => {
+                                regionsWithData.push(region.region);
+                                this.vrcdnViewersGauge.set(
+                                    {
+                                        eventName: event.name,
+                                        streamName: event.vrcdnStream2Name,
+                                        region: region.region,
+                                    },
+                                    region.total,
+                                );
+                                totalViewers += region.total;
+                                total2Viewers += region.total;
+                            });
+
+                            // set the total to 0 for any regions we don't have data for
+                            this.regions.forEach((region) => {
+                                if (!regionsWithData.includes(region)) {
+                                    this.vrcdnViewersGauge.set(
+                                        {
+                                            eventName: event.name,
+                                            streamName: event.vrcdnStream2Name,
+                                            region: region,
+                                        },
+                                        0,
+                                    );
+                                }
+                            });
+                        });
+
+                    this.logger.debug(
+                        `Event ${event.name} (${event.vrcdnStream2Name}) has ${total2Viewers} viewers`,
+                    );
+                }
+
                 this.vrcdnViewersGauge.set(
                     {
                         eventName: event.name,
@@ -131,8 +176,8 @@ export class VRCDNScraper {
 
         this.logger.debug(
             'Finished VRCDN Scraper Job. Took ' +
-                (Date.now() - startTimestamp) +
-                'ms',
+            (Date.now() - startTimestamp) +
+            'ms',
         );
     }
 }

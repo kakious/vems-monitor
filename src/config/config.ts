@@ -6,5 +6,6 @@ export default () => ({
     vrchat: {
         username: process.env['VRCHAT_USERNAME'] || '',
         password: process.env['VRCHAT_PASSWORD'] || '',
+        cookie: process.env['VRCHAT_COOKIE'] || '',
     },
 });
